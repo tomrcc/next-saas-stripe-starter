@@ -8,6 +8,7 @@ import { buttonVariants } from "@/components/ui/button"
 import type { FeatureKey } from "@/config/features"
 import { dashboardNav } from "@/config/nav"
 import { siteConfig } from "@/config/site"
+import navigation from "@/data/navigation.json"
 import { DEFAULT_LOGIN_REDIRECT } from "@/lib/auth/redirect"
 import { getSession } from "@/lib/auth/session"
 import { getFeatures } from "@/lib/features/resolve"
@@ -15,17 +16,13 @@ import { filterNav } from "@/lib/nav"
 import { cn } from "@/lib/utils"
 import { getViewRole } from "@/modules/admin/preview" // module:admin
 
-// `feature`: hidden while this flag is off.
+// `feature`: hidden while this flag is off, or once its module is pruned.
 const links: {
   title: string
   href: string
-  external?: boolean
-  feature?: FeatureKey
-}[] = [
-  { title: "Pricing", href: siteConfig.links.pricing, feature: "billing" },
-  { title: "Blog", href: "/blog", feature: "blog" }, // module:blog
-  { title: "Docs", href: "/docs", feature: "docs" }, // module:docs
-]
+  external: boolean
+  feature: string | null
+}[] = navigation
 
 const linkClassName =
   "rounded-lg px-4 py-2 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-900/5 hover:text-foreground dark:text-white/90 dark:hover:bg-white/10"
@@ -34,9 +31,10 @@ export async function SiteHeader() {
   const features = await getFeatures()
   // The session is never read with auth off: there may be no database.
   const session = features.auth ? await getSession() : null
-  const visibleLinks = links.filter(
-    (link) => !link.feature || features[link.feature]
-  )
+  // Keeps each link's index in the file for its region path.
+  const visibleLinks = links
+    .map((link, index) => ({ ...link, index }))
+    .filter((link) => !link.feature || features[link.feature as FeatureKey])
 
   let menuItems: { title: string; href: string }[] = []
   if (session) {
@@ -71,7 +69,11 @@ export async function SiteHeader() {
               {...(link.external && { target: "_blank", rel: "noreferrer" })}
               className={linkClassName}
             >
-              {link.title}
+              <editable-text
+                data-prop={`@data[navigation].${link.index}.title`}
+              >
+                {link.title}
+              </editable-text>
             </Link>
           ))}
           {/* Signed-in visitors get the "About Pro" button instead. */}

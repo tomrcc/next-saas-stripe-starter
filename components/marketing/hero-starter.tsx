@@ -1,18 +1,41 @@
-import { ArrowUpRight, Sparkles } from "lucide-react"
+import { ArrowUpRight } from "lucide-react"
 import Link from "next/link"
 
 import { GridSection } from "@/components/marketing/grid-section"
+import { Lines } from "@/components/marketing/lines"
 import { ModuleDeck } from "@/components/marketing/module-deck"
-import { getStarterCta } from "@/components/marketing/starter-cta"
+import {
+  SecondaryButton,
+  type ButtonContent,
+} from "@/components/marketing/secondary-button"
+import type { StarterCta } from "@/components/marketing/starter-cta"
 import { buttonVariants } from "@/components/ui/button"
 import { siteConfig } from "@/config/site"
-import { formatStars, getGithubStars } from "@/lib/github"
+import type { GithubRepo } from "@/lib/github"
 import { cn } from "@/lib/utils"
 
-export async function HeroStarter() {
-  const count = await getGithubStars()
-  const stars = count ? formatStars(count) : null
-  const cta = await getStarterCta()
+export type HeroBlock = {
+  title_lines?: string[] | null
+  subtitle_lines?: string[] | null
+  secondary_button?: ButtonContent | null
+  // From the route (block extras), not content.
+  github?: GithubRepo | null
+  cta?: StarterCta | null
+}
+
+export function HeroStarter({
+  title_lines,
+  subtitle_lines,
+  secondary_button,
+  github,
+  cta,
+}: HeroBlock) {
+  const stars = github?.stars
+    ? new Intl.NumberFormat("en", {
+        notation: "compact",
+        maximumFractionDigits: 1,
+      }).format(github.stars)
+    : null
 
   return (
     <GridSection
@@ -44,41 +67,39 @@ export async function HeroStarter() {
           </span>
         </a>
 
-        <h1 className="mt-5 animate-slide-up-fade font-display text-4xl font-medium text-balance [--offset:20px] [animation-delay:100ms] motion-reduce:animate-none sm:text-5xl sm:leading-[1.15]">
-          One starter. <br className="hidden sm:block" />
-          Any project.
+        <h1
+          data-editable="array"
+          data-prop="title_lines"
+          className="mt-5 animate-slide-up-fade font-display text-4xl font-medium text-balance [--offset:20px] [animation-delay:100ms] motion-reduce:animate-none sm:text-5xl sm:leading-[1.15]"
+        >
+          <Lines lines={title_lines} />
         </h1>
 
-        <p className="mt-5 animate-slide-up-fade text-base text-balance text-muted-foreground [animation-delay:200ms] motion-reduce:animate-none sm:text-xl">
-          A modular Next.js foundation. <br className="hidden sm:block" />
-          Begin with a blog, end up with a SaaS.
+        <p
+          data-editable="array"
+          data-prop="subtitle_lines"
+          className="mt-5 animate-slide-up-fade text-base text-balance text-muted-foreground [animation-delay:200ms] motion-reduce:animate-none sm:text-xl"
+        >
+          <Lines lines={subtitle_lines} />
         </p>
       </div>
 
       <div className="mx-auto mt-10 flex max-w-fit animate-slide-up-fade gap-4 [--offset:5px] [animation-delay:300ms] motion-reduce:animate-none">
-        <Link
-          href={cta.href}
-          {...(cta.external && { target: "_blank", rel: "noreferrer" })}
-          className={cn(
-            buttonVariants({ size: "lg" }),
-            "px-5 shadow-sm hover:ring-4 hover:ring-neutral-200 dark:hover:ring-white/10"
-          )}
-        >
-          {cta.label}
-        </Link>
-        <Link
-          href={siteConfig.links.pro}
-          target="_blank"
-          rel="noreferrer"
-          className={cn(
-            buttonVariants({ variant: "outline", size: "lg" }),
-            "px-5 shadow-sm hover:ring-4 hover:ring-neutral-200",
-            "dark:border-violet-400/40 dark:bg-violet-400/10 dark:text-violet-100 dark:hover:bg-violet-400/20 dark:hover:ring-violet-400/20"
-          )}
-        >
-          <Sparkles className="text-violet-500 dark:text-violet-300" />
-          About Pro
-        </Link>
+        {cta && (
+          <Link
+            href={cta.href}
+            {...(cta.external && { target: "_blank", rel: "noreferrer" })}
+            className={cn(
+              buttonVariants({ size: "lg" }),
+              "px-5 shadow-sm hover:ring-4 hover:ring-neutral-200 dark:hover:ring-white/10"
+            )}
+          >
+            {cta.label}
+          </Link>
+        )}
+        {secondary_button && (
+          <SecondaryButton {...secondary_button} prop="secondary_button" />
+        )}
       </div>
 
       <div className="mt-12 animate-slide-up-fade [animation-delay:400ms] motion-reduce:animate-none">

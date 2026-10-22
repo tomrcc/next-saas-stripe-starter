@@ -22,9 +22,15 @@ export default async function DocsSlugPage({ params }: Props) {
 
   return (
     <DocsPage toc={page.data.toc} full={page.data.full}>
-      <DocsTitle>{page.data.title}</DocsTitle>
-      <DocsDescription>{page.data.description}</DocsDescription>
-      <DocsBody>
+      <DocsTitle data-editable="text" data-prop="title">
+        {page.data.title}
+      </DocsTitle>
+      {page.data.description && (
+        <DocsDescription data-editable="text" data-prop="description">
+          {page.data.description}
+        </DocsDescription>
+      )}
+      <DocsBody data-editable="text" data-type="block" data-prop="@content">
         <MDX
           components={getMDXComponents({
             a: createRelativeLink(docsSource, page),

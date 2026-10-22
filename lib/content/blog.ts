@@ -1,12 +1,13 @@
 import { loader } from "fumadocs-core/source"
-import { pageSchema } from "fumadocs-core/source/schema"
 import { defineCollections } from "fumadocs-mdx/macro"
 import { z } from "zod"
+
+import { pageFields } from "@/lib/content/schema"
 
 const blog = defineCollections({
   type: "doc",
   dir: "content/blog",
-  schema: pageSchema.extend({
+  schema: pageFields.extend({
     image: z.string(),
     date: z.coerce.date(),
     // Keys of config/blog.ts authors and categories.

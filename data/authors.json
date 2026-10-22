@@ -1,0 +1,16 @@
+[
+  {
+    "slug": "mickasmt",
+    "name": "mickasmt",
+    "role": "Maintainer",
+    "image": "/_static/avatars/mickasmt.webp",
+    "twitter": "miickasmt"
+  },
+  {
+    "slug": "shadcn",
+    "name": "shadcn",
+    "role": "Contributor",
+    "image": "/_static/avatars/shadcn.jpeg",
+    "twitter": "shadcn"
+  }
+]

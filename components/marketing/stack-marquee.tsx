@@ -1,4 +1,5 @@
 import { GridSection } from "@/components/marketing/grid-section"
+import { Lines } from "@/components/marketing/lines"
 import {
   stack,
   StackLogo,
@@ -7,13 +8,18 @@ import {
 
 const logos = Object.keys(stack) as StackKey[]
 
-export function StackMarquee() {
+export type StackMarqueeBlock = { caption_lines?: string[] | null }
+
+export function StackMarquee({ caption_lines }: StackMarqueeBlock) {
   return (
     <GridSection innerClassName="py-8 sm:py-4">
       <div className="animate-slide-up-fade [animation-delay:500ms] motion-reduce:animate-none sm:flex sm:items-center sm:gap-8">
-        <p className="mx-auto max-w-sm text-center text-sm font-medium text-balance text-muted-foreground sm:mx-0 sm:shrink-0 sm:text-left sm:leading-snug">
-          Built on a modern, <br className="hidden sm:block" />
-          production-ready stack
+        <p
+          data-editable="array"
+          data-prop="caption_lines"
+          className="mx-auto max-w-sm text-center text-sm font-medium text-balance text-muted-foreground sm:mx-0 sm:shrink-0 sm:text-left sm:leading-snug"
+        >
+          <Lines lines={caption_lines} />
         </p>
         <div className="relative flex w-full min-w-0 items-center overflow-hidden mask-[linear-gradient(to_right,transparent,black_20%,black_80%,transparent)] py-8 sm:py-4">
           {[false, true].map((hidden) => (

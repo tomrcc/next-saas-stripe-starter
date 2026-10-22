@@ -1,7 +1,9 @@
+import { EditableRegions } from "@cloudcannon/editable-regions/react"
 import type { Metadata } from "next"
 import { Geist_Mono, Inter } from "next/font/google"
 
 import "./globals.css"
+import { CloudCannonEditor } from "@/app/cloudcannon/cloudcannon-editor"
 import { DevToolbar } from "@/components/dev/dev-toolbar"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
@@ -66,7 +68,8 @@ export default function RootLayout({
     >
       <body>
         <ThemeProvider>
-          {children}
+          <EditableRegions tag="div">{children}</EditableRegions>
+          <CloudCannonEditor />
           <Toaster />
           {process.env.NODE_ENV === "development" && <DevToolbar />}
         </ThemeProvider>

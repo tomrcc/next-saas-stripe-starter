@@ -1,33 +1,38 @@
 import { Link2 } from "lucide-react"
-import { notFound } from "next/navigation"
 
 import { getMDXComponents } from "@/components/content/mdx-components"
 import { TableOfContents } from "@/components/content/table-of-contents"
 import { GridSection } from "@/components/marketing/grid-section"
-import { legalSource } from "@/lib/content/legal"
+import type { SitePageOf } from "@/lib/content/pages"
 import { buildMetadata } from "@/lib/metadata"
 import { formatDate } from "@/lib/utils"
 
-// Renders a page of content/legal: title band, numbered sections with a
+// Renders a legal page of content/pages: title band, numbered sections with a
 // sticky table of contents, then the last update date.
-export function LegalPage({ slug }: { slug: string }) {
-  const page = legalSource.getPage([slug])
-  if (!page) notFound()
-
+export function LegalPage({ page }: { page: SitePageOf<"legal"> }) {
   const MDX = page.data.body
   const sections = page.data.toc.filter((item) => item.depth === 2)
 
   return (
     <>
       <GridSection innerClassName="py-16">
-        <h1 className="mx-auto max-w-md text-center font-display text-4xl font-medium text-balance sm:text-5xl sm:leading-[1.15]">
+        <h1
+          data-editable="text"
+          data-prop="title"
+          className="mx-auto max-w-md text-center font-display text-4xl font-medium text-balance sm:text-5xl sm:leading-[1.15]"
+        >
           {page.data.title}
         </h1>
       </GridSection>
 
       <GridSection innerClassName="py-8 sm:py-12">
         <div className="grid grid-cols-4 gap-10 lg:gap-20">
-          <article className="prose-neutral dark:prose-invert col-span-4 prose max-w-none [counter-reset:legal] md:col-span-3">
+          <article
+            data-editable="text"
+            data-type="block"
+            data-prop="@content"
+            className="prose-neutral dark:prose-invert col-span-4 prose max-w-none [counter-reset:legal] md:col-span-3"
+          >
             <MDX
               components={getMDXComponents({
                 h2: LegalHeading,
@@ -51,10 +56,7 @@ export function LegalPage({ slug }: { slug: string }) {
   )
 }
 
-export function getLegalMetadata(slug: string) {
-  const page = legalSource.getPage([slug])
-  if (!page) notFound()
-
+export function getLegalMetadata(page: SitePageOf<"legal">) {
   return buildMetadata({
     title: page.data.title,
     description: page.data.description,

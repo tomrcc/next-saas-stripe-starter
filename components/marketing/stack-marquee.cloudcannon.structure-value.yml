@@ -1,0 +1,24 @@
+label: Stack logos
+icon: view_carousel
+picker_preview:
+  text:
+    - Stack logos
+  icon:
+    - view_carousel
+preview:
+  text:
+    - key: caption_lines[0]
+    - Stack logos
+  icon:
+    - view_carousel
+value:
+  _type: stack-marquee
+  caption_lines: []
+_inputs:
+  caption_lines:
+    type: array
+    label: Caption
+    comment: One item per line. Lines break on wider screens only. The logos are part of the design.
+  caption_lines[*]:
+    type: text
+    label: Line

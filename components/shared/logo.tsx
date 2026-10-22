@@ -19,7 +19,9 @@ export function LogoMark({ className }: { className?: string }) {
           <path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3 6.6 3.7L12 11.7 5.4 8 12 4.3Z" />
         </svg>
       </span>
-      {siteConfig.name}
+      <editable-text data-prop="@data[site].name">
+        {siteConfig.name}
+      </editable-text>
     </span>
   )
 }

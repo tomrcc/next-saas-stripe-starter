@@ -18,6 +18,12 @@
 # production
 /build
 
+# CloudCannon editing build: server routes parked during the export
+/.editing-build/
+
+# CloudCannon JSON schemas, downloaded for reference
+.cloudcannon/migration/*.schema.json
+
 # misc
 .DS_Store
 *.pem

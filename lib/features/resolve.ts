@@ -14,6 +14,7 @@ import {
   foundationKeys,
   type FoundationKey,
 } from "@/config/foundation"
+import { isEditingBuild } from "@/lib/editing-build"
 
 export const FEATURE_OVERRIDES_COOKIE = "dev-feature-overrides"
 
@@ -65,6 +66,8 @@ export const getFeatureStates = cache(async () => {
   const own = Object.fromEntries(
     featureKeys.map((key) => [key, overrides[key] ?? features[key].default])
   ) as Record<FeatureKey, boolean>
+  // Static export: no sessions. Modules that depend on auth go off with it.
+  if (isEditingBuild) own.auth = false
 
   const resolved = new Map<FeatureKey, boolean>()
 

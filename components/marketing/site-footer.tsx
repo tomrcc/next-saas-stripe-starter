@@ -4,48 +4,29 @@ import { Logo } from "@/components/shared/logo"
 import { ThemeSwitcher } from "@/components/shared/theme-switcher"
 import type { FeatureKey } from "@/config/features"
 import { siteConfig } from "@/config/site"
+import footer from "@/data/footer.json"
 import { getFeatures } from "@/lib/features/resolve"
 
 type FooterColumn = {
   title: string
-  // Hidden while this flag is off.
-  links: { title: string; href: string; feature?: FeatureKey }[]
+  // Hidden while this flag is off, or once its module is pruned.
+  links: { title: string; href: string; feature: string | null }[]
 }
 
-const columns: FooterColumn[] = [
-  {
-    title: "Product",
-    links: [
-      { title: "Pricing", href: siteConfig.links.pricing, feature: "billing" },
-      { title: "Dashboard", href: "/dashboard", feature: "auth" },
-    ],
-  },
-  {
-    title: "Resources",
-    links: [
-      { title: "Blog", href: "/blog", feature: "blog" }, // module:blog
-      { title: "Changelog", href: "/changelog", feature: "changelog" }, // module:changelog
-      { title: "Docs", href: "/docs", feature: "docs" }, // module:docs
-      { title: "GitHub", href: siteConfig.links.github },
-    ],
-  },
-  {
-    title: "Legal",
-    links: [
-      { title: "Terms", href: siteConfig.links.terms },
-      { title: "Privacy", href: siteConfig.links.privacy },
-    ],
-  },
-]
+const columns: FooterColumn[] = footer
 
 export async function SiteFooter() {
   const features = await getFeatures()
+  // Keeps each column's and link's index in the file for its region path.
   const visibleColumns = columns
-    .map((column) => ({
+    .map((column, index) => ({
       ...column,
-      links: column.links.filter(
-        (link) => !link.feature || features[link.feature]
-      ),
+      index,
+      links: column.links
+        .map((link, linkIndex) => ({ ...link, index: linkIndex }))
+        .filter(
+          (link) => !link.feature || features[link.feature as FeatureKey]
+        ),
     }))
     .filter((column) => column.links.length > 0)
 
@@ -54,14 +35,24 @@ export async function SiteFooter() {
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.5fr_repeat(3,1fr)]">
         <div className="max-w-xs">
           <Logo />
-          <p className="mt-3 text-sm text-muted-foreground">
+          <p
+            data-editable="text"
+            data-prop="@data[site].description"
+            className="mt-3 text-sm text-muted-foreground"
+          >
             {siteConfig.description}
           </p>
         </div>
 
         {visibleColumns.map((column) => (
           <div key={column.title}>
-            <p className="text-sm font-medium">{column.title}</p>
+            <p
+              data-editable="text"
+              data-prop={`@data[footer].${column.index}.title`}
+              className="text-sm font-medium"
+            >
+              {column.title}
+            </p>
             <ul className="mt-3 space-y-2">
               {column.links.map((link) => (
                 <li key={link.title}>
@@ -69,7 +60,11 @@ export async function SiteFooter() {
                     href={link.href}
                     className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    {link.title}
+                    <editable-text
+                      data-prop={`@data[footer].${column.index}.links.${link.index}.title`}
+                    >
+                      {link.title}
+                    </editable-text>
                   </Link>
                 </li>
               ))}
@@ -81,8 +76,11 @@ export async function SiteFooter() {
       <div className="border-t">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-6 sm:px-6">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} {siteConfig.name}. Open source under
-            the MIT license.
+            © {new Date().getFullYear()}{" "}
+            <editable-text data-prop="@data[site].name">
+              {siteConfig.name}
+            </editable-text>
+            . Open source under the MIT license.
           </p>
           <ThemeSwitcher />
         </div>

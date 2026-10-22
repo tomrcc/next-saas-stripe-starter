@@ -1,8 +1,10 @@
 import "server-only"
 
+export type GithubRepo = { stars: number; forks: number }
+
 // Star and fork counts of the starter repo, refreshed at most once an hour.
 // Returns null when GitHub is unreachable or rate-limited.
-export async function getGithubRepo() {
+export async function getGithubRepo(): Promise<GithubRepo | null> {
   try {
     const res = await fetch(
       "https://api.github.com/repos/mickasmt/next-saas-stripe-starter",
@@ -25,15 +27,4 @@ export async function getGithubRepo() {
   } catch {
     return null
   }
-}
-
-export async function getGithubStars() {
-  return (await getGithubRepo())?.stars ?? null
-}
-
-export function formatStars(count: number) {
-  return new Intl.NumberFormat("en", {
-    notation: "compact",
-    maximumFractionDigits: 1,
-  }).format(count)
 }

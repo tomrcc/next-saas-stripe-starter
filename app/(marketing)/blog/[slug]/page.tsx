@@ -2,18 +2,12 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import { getMDXComponents } from "@/components/content/mdx-components"
+import { PostAuthors } from "@/components/content/post-authors"
+import { PostCategories } from "@/components/content/post-categories"
 import { ProCtaCard } from "@/components/content/pro-cta-card"
 import { TableOfContents } from "@/components/content/table-of-contents"
 import { GridSection } from "@/components/marketing/grid-section"
 import { BlurImage } from "@/components/shared/blur-image"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import {
-  blogAuthors,
-  blogCategories,
-  type BlogAuthor,
-  type BlogCategory,
-} from "@/config/blog"
 import { getBlurDataURL } from "@/lib/content/blur"
 import { blogSource } from "@/lib/content/blog"
 import { requireFeature } from "@/lib/features/guard"
@@ -29,9 +23,6 @@ export default async function BlogPostPage({ params }: Props) {
   if (!post) notFound()
 
   const MDX = post.data.body
-  const authors = post.data.authors
-    .map((key) => blogAuthors[key as BlogAuthor])
-    .filter(Boolean)
   const related = await Promise.all(
     post.data.related
       .map((relatedSlug) => blogSource.getPage([relatedSlug]))
@@ -51,21 +42,34 @@ export default async function BlogPostPage({ params }: Props) {
       <GridSection lines innerClassName="pb-12 pt-16 sm:px-12">
         <div className="max-w-screen-sm">
           <div className="flex flex-wrap items-center gap-4">
-            {post.data.categories.map((key) => (
-              <Badge key={key} variant="secondary" className="rounded-lg">
-                {blogCategories[key as BlogCategory]?.title ?? key}
-              </Badge>
-            ))}
+            <div
+              data-editable="component"
+              data-component="post-categories"
+              data-prop-categories="categories"
+              className="flex flex-wrap items-center gap-4 empty:hidden"
+            >
+              <PostCategories categories={post.data.categories} />
+            </div>
             <span className="text-sm text-muted-foreground">
               Last updated · {formatDate(post.data.date)}
             </span>
           </div>
-          <h1 className="mt-5 font-display text-3xl font-medium text-balance sm:text-4xl sm:leading-[1.25]">
+          <h1
+            data-editable="text"
+            data-prop="title"
+            className="mt-5 font-display text-3xl font-medium text-balance sm:text-4xl sm:leading-[1.25]"
+          >
             {post.data.title}
           </h1>
-          <p className="mt-5 text-muted-foreground sm:text-lg">
-            {post.data.description}
-          </p>
+          {post.data.description && (
+            <p
+              data-editable="text"
+              data-prop="description"
+              className="mt-5 text-muted-foreground sm:text-lg"
+            >
+              {post.data.description}
+            </p>
+          )}
         </div>
       </GridSection>
 
@@ -74,7 +78,11 @@ export default async function BlogPostPage({ params }: Props) {
       <GridSection innerClassName="px-0 sm:px-0">
         <div className="grid grid-cols-1 md:grid-cols-3">
           <div className="md:col-span-2">
-            <div className="relative aspect-[1200/630] w-full overflow-hidden">
+            <div
+              data-editable="image"
+              data-prop-src="image"
+              className="relative aspect-[1200/630] w-full overflow-hidden"
+            >
               <BlurImage
                 src={post.data.image}
                 alt={post.data.title}
@@ -87,7 +95,12 @@ export default async function BlogPostPage({ params }: Props) {
               />
             </div>
 
-            <article className="prose-neutral dark:prose-invert lg:prose-lg prose max-w-none px-5 py-10 sm:px-12 prose-headings:scroll-mt-24 prose-headings:font-display prose-a:font-medium prose-a:text-foreground prose-a:underline-offset-4 prose-img:rounded-xl prose-img:border">
+            <article
+              data-editable="text"
+              data-type="block"
+              data-prop="@content"
+              className="prose-neutral dark:prose-invert lg:prose-lg prose max-w-none px-5 py-10 sm:px-12 prose-headings:scroll-mt-24 prose-headings:font-display prose-a:font-medium prose-a:text-foreground prose-a:underline-offset-4 prose-img:rounded-xl prose-img:border"
+            >
               <MDX components={getMDXComponents()} />
             </article>
 
@@ -132,34 +145,13 @@ export default async function BlogPostPage({ params }: Props) {
 
           <aside className="hidden border-l border-grid-border bg-muted/40 p-10 md:block">
             <div className="sticky top-20">
-              {authors.length > 0 && (
-                <div className="pb-5">
-                  <p className="text-sm text-muted-foreground">Written by</p>
-                  <div className="mt-3 space-y-3">
-                    {authors.map((author) => (
-                      <div
-                        key={author.name}
-                        className="flex items-center gap-3"
-                      >
-                        <Avatar className="size-9 border">
-                          <AvatarImage src={author.image} alt={author.name} />
-                          <AvatarFallback>
-                            {author.name.slice(0, 2)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="text-sm leading-none font-semibold">
-                            {author.name}
-                          </p>
-                          <p className="mt-1 text-xs text-muted-foreground">
-                            {author.role}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <div
+                data-editable="component"
+                data-component="post-authors"
+                data-prop-authors="authors"
+              >
+                <PostAuthors authors={post.data.authors} />
+              </div>
 
               <TableOfContents className="pt-4" items={post.data.toc} />
 

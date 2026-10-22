@@ -17,17 +17,22 @@ import {
 import { blogAuthors, blogCategories, type BlogAuthor } from "@/config/blog"
 import { getBlurDataURL } from "@/lib/content/blur"
 import { blogSource } from "@/lib/content/blog"
+import { getSitePage } from "@/lib/content/pages"
+import { isEditingBuild } from "@/lib/editing-build"
 import { requireFeature } from "@/lib/features/guard"
 import { isFeatureEnabled } from "@/lib/features/resolve"
 import { buildMetadata } from "@/lib/metadata"
 import { paginate } from "@/lib/pagination"
 import { cn, formatDate } from "@/lib/utils"
 
-export const metadata = buildMetadata({
-  title: "Blog",
-  description: "Guides, news and updates about the starter.",
-  path: "/blog",
-})
+export function generateMetadata() {
+  const { data } = getSitePage("blog", "listing")
+  return buildMetadata({
+    title: data.title,
+    description: data.meta_description,
+    path: "/blog",
+  })
+}
 
 // Three full rows of the grid.
 const PAGE_SIZE = 9
@@ -36,7 +41,9 @@ type Props = { searchParams: Promise<{ category?: string; page?: string }> }
 
 export default async function BlogPage({ searchParams }: Props) {
   await requireFeature("blog")
-  const { category, page: rawPage } = await searchParams
+  const intro = getSitePage("blog", "listing").data
+  // A static export has no query string: render "All", page 1.
+  const { category, page: rawPage } = isEditingBuild ? {} : await searchParams
 
   const filtered = blogSource
     .getPages()
@@ -75,12 +82,22 @@ export default async function BlogPage({ searchParams }: Props) {
   return (
     <>
       <GridSection lines innerClassName="py-12">
-        <h1 className="font-display text-4xl font-medium sm:text-5xl sm:leading-[1.15]">
-          Blog
+        <h1
+          data-editable="text"
+          data-prop="title"
+          className="font-display text-4xl font-medium sm:text-5xl sm:leading-[1.15]"
+        >
+          {intro.title}
         </h1>
-        <p className="mt-2 text-lg text-muted-foreground sm:text-lg">
-          Guides and news about the starter.
-        </p>
+        {intro.description && (
+          <p
+            data-editable="text"
+            data-prop="description"
+            className="mt-2 text-lg text-muted-foreground sm:text-lg"
+          >
+            {intro.description}
+          </p>
+        )}
         <CategoryTabs
           tabs={tabs}
           active={category ?? "all"}

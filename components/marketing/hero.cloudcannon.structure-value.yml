@@ -1,0 +1,42 @@
+label: Hero
+icon: rocket_launch
+picker_preview:
+  text:
+    - Hero
+  icon:
+    - rocket_launch
+preview:
+  text:
+    - key: title_lines[0]
+    - Hero
+  icon:
+    - rocket_launch
+value:
+  _type: hero
+  title_lines: []
+  subtitle_lines: []
+  secondary_button:
+    label: About Pro
+    href: https://github.com/mickasmt/next-saas-stripe-starter#pro-version
+_inputs:
+  title_lines:
+    type: array
+    label: Title
+    comment: One item per line. Lines break on wider screens only.
+  title_lines[*]:
+    type: text
+    label: Line
+  subtitle_lines:
+    type: array
+    label: Subtitle
+    comment: One item per line. Lines break on wider screens only.
+  subtitle_lines[*]:
+    type: text
+    label: Line
+  secondary_button:
+    type: object
+    comment: The first button and the GitHub badge come from the site setup.
+    options:
+      structures: _structures.button
+      preview:
+        icon: ads_click

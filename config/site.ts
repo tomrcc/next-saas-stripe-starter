@@ -1,3 +1,5 @@
+import site from "@/data/site.json"
+
 // Absolute URL of the deployment, used by metadata, sitemap and robots.
 // Set NEXT_PUBLIC_APP_URL in production; Vercel previews fall back to their
 // own URL.
@@ -10,11 +12,10 @@ const url =
 const github = "https://github.com/mickasmt/next-saas-stripe-starter"
 
 export const siteConfig = {
-  name: "SaaS Starter",
-  // Full title of the home page, also used on social cards.
-  title: "SaaS Starter — the modular Next.js SaaS starter",
-  description:
-    "Open-source SaaS starter built with Next.js 16, Better Auth, Drizzle, Neon and Stripe.",
+  // Name, default title and description are edited in data/site.json.
+  name: site.name,
+  title: site.title,
+  description: site.description,
   url,
   links: {
     github,

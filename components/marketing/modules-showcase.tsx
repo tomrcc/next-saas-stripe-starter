@@ -21,103 +21,65 @@ import { cn } from "@/lib/utils"
 // The landing page's case for the module system: a heading over a playable
 // copy of the dev panel, a 2x2 grid of feature cards, then a row of facts.
 
-type Feature = {
-  title: string
-  description: React.ReactNode
-  visual: React.ReactNode
-  // Taller than the card frame on purpose: fades out at the bottom.
-  overflows?: boolean
-  href?: string
+const icons: Record<string, LucideIcon> = {
+  "layout-grid": LayoutGrid,
+  scale: Scale,
+  braces: Braces,
+  bot: Bot,
+  zap: Zap,
 }
 
-const features: Feature[] = [
-  {
-    title: "Delete a module for good, in one command",
-    description: (
-      <>
-        Not shipping a blog? <Code>pnpm modules:prune</Code> deletes the
-        module&apos;s files, the lines marked for it in shared code, its flag
-        and its packages. It prints a dry run first and only applies on a clean
-        git tree.
-      </>
-    ),
-    visual: <PruneTerminal />,
-    overflows: true,
-    href: "/docs/modules", // module:docs
-  },
-  {
-    title: "Dependencies resolved, never broken",
-    description: (
-      <>
-        Modules declare what they build on. Turn Auth off and Billing and Admin
-        pause with it; turn Billing back on and Auth comes along. The panel
-        tells you before it happens.
-      </>
-    ),
-    visual: <DependencyGraph />,
-    href: "/docs/modules", // module:docs
-  },
-  {
-    title: "One flag per module, in one file",
-    description: (
-      <>
-        The panel only changes your browser. Once a setup feels right,{" "}
-        <Code>Copy config</Code> gives you the defaults to set in{" "}
-        <Code>config/features.ts</Code>. Nothing to add to your environment.
-      </>
-    ),
-    visual: <ConfigFile />,
-    href: "/docs/modules", // module:docs
-  },
-  {
-    title: "Services checked before anything breaks",
-    description: (
-      <>
-        A module that needs Stripe stays off until its keys are set, and the
-        panel lists the exact variables missing. No database yet? Turn Auth off
-        and the app runs without one.
-      </>
-    ),
-    visual: <ServicesCheck />,
-  },
-]
+// Taller-than-the-frame visuals fade out at the bottom.
+const visuals: Record<
+  string,
+  { Visual: () => React.ReactNode; overflows?: boolean }
+> = {
+  prune_terminal: { Visual: PruneTerminal, overflows: true },
+  dependency_graph: { Visual: DependencyGraph },
+  config_file: { Visual: ConfigFile },
+  services_check: { Visual: ServicesCheck },
+}
 
-const facts: { icon: LucideIcon; title: string; description: string }[] = [
-  {
-    icon: Scale,
-    title: "Open source, MIT",
-    description:
-      "Read every line, fork it, ship it commercially. No license key, no lock-in.",
-  },
-  {
-    icon: Braces,
-    title: "Plain Next.js",
-    description:
-      "A module is a folder, a flag and a few markers. No plugin system to learn.",
-  },
-  {
-    icon: Bot,
-    title: "Ready for AI agents",
-    description:
-      "AGENTS.md teaches coding agents the module conventions, so what they write stays prunable.",
-  },
-  {
-    icon: Zap,
-    title: "Nothing extra in production",
-    description:
-      "The panel only renders in development. Production reads config/features.ts and that's it.",
-  },
-]
+type Feature = {
+  title?: string | null
+  // Markdown: inline code, bold and italic.
+  description?: string | null
+  visual?: string | null
+  href?: string | null
+  link_label?: string | null
+}
 
-export function ModulesShowcase() {
+type Fact = {
+  icon?: string | null
+  title?: string | null
+  description?: string | null
+}
+
+export type ModulesShowcaseBlock = {
+  eyebrow_icon?: string | null
+  eyebrow?: string | null
+  title?: string | null
+  description?: string | null
+  features?: Feature[] | null
+  facts?: Fact[] | null
+}
+
+export function ModulesShowcase({
+  eyebrow_icon,
+  eyebrow,
+  title,
+  description,
+  features,
+  facts,
+}: ModulesShowcaseBlock) {
   return (
     <GridSection innerClassName="px-0 sm:px-0">
       <div className="px-4 pt-20 text-center sm:px-12">
         <SectionHeading
-          icon={LayoutGrid}
-          eyebrow="Modular by design"
-          title="Flip a switch, reshape the app"
-          description="Turn a module off, and its routes and links go with it."
+          icon={eyebrow_icon ? icons[eyebrow_icon] : undefined}
+          eyebrow={eyebrow}
+          title={title}
+          description={description}
         />
       </div>
 
@@ -131,10 +93,15 @@ export function ModulesShowcase() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 border-t border-grid-border md:grid-cols-2">
-        {features.map((feature, index) => (
+      <div
+        data-editable="array"
+        data-prop="features"
+        data-direction="row"
+        className="grid grid-cols-1 border-t border-grid-border md:grid-cols-2"
+      >
+        {(features ?? []).map((feature, index) => (
           <FeatureCard
-            key={feature.title}
+            key={index}
             feature={feature}
             className={cn(
               index > 0 && "max-md:border-t",
@@ -145,17 +112,40 @@ export function ModulesShowcase() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-px border-t border-grid-border bg-grid-border text-sm sm:grid-cols-2 lg:grid-cols-4">
-        {facts.map(({ icon: Icon, title, description }) => (
-          <div
-            key={title}
-            className="flex flex-col items-start gap-2 bg-background p-8 text-left lg:px-9 lg:py-10"
-          >
-            <Icon className="size-4 shrink-0 text-indigo-600 dark:text-indigo-400" />
-            <h3 className="font-medium">{title}</h3>
-            <p className="text-pretty text-muted-foreground">{description}</p>
-          </div>
-        ))}
+      <div
+        data-editable="array"
+        data-prop="facts"
+        data-direction="row"
+        className="grid grid-cols-1 gap-px border-t border-grid-border bg-grid-border text-sm sm:grid-cols-2 lg:grid-cols-4"
+      >
+        {(facts ?? []).map((fact, index) => {
+          const Icon = fact.icon ? icons[fact.icon] : undefined
+          return (
+            <div
+              key={index}
+              data-editable="array-item"
+              className="flex flex-col items-start gap-2 bg-background p-8 text-left lg:px-9 lg:py-10"
+            >
+              {Icon && (
+                <Icon className="size-4 shrink-0 text-indigo-600 dark:text-indigo-400" />
+              )}
+              <h3
+                data-editable="text"
+                data-prop="title"
+                className="font-medium"
+              >
+                {fact.title}
+              </h3>
+              <p
+                data-editable="text"
+                data-prop="description"
+                className="text-pretty text-muted-foreground"
+              >
+                {fact.description}
+              </p>
+            </div>
+          )
+        })}
       </div>
     </GridSection>
   )
@@ -167,21 +157,29 @@ function SectionHeading({
   title,
   description,
 }: {
-  icon: LucideIcon
-  eyebrow: string
-  title: string
-  description: string
+  icon?: LucideIcon
+  eyebrow?: string | null
+  title?: string | null
+  description?: string | null
 }) {
   return (
     <div className="flex flex-col items-center">
       <span className="flex items-center gap-2 text-base font-medium text-muted-foreground">
-        <Icon className="size-5" />
-        {eyebrow}
+        {Icon && <Icon className="size-5" />}
+        <editable-text data-prop="eyebrow">{eyebrow}</editable-text>
       </span>
-      <h2 className="mt-3 max-w-lg font-display text-3xl font-medium text-pretty sm:text-4xl md:text-5xl">
+      <h2
+        data-editable="text"
+        data-prop="title"
+        className="mt-3 max-w-lg font-display text-3xl font-medium text-pretty sm:text-4xl md:text-5xl"
+      >
         {title}
       </h2>
-      <p className="mt-3 max-w-xl text-base text-pretty text-muted-foreground sm:text-lg">
+      <p
+        data-editable="text"
+        data-prop="description"
+        className="mt-3 max-w-xl text-base text-pretty text-muted-foreground sm:text-lg"
+      >
         {description}
       </p>
     </div>
@@ -195,8 +193,11 @@ function FeatureCard({
   feature: Feature
   className?: string
 }) {
+  const visual = feature.visual ? visuals[feature.visual] : undefined
+
   return (
     <div
+      data-editable="array-item"
       className={cn(
         "border-grid-border px-4 py-6 sm:px-10 sm:py-14",
         className
@@ -208,22 +209,32 @@ function FeatureCard({
           className={cn(
             "relative h-80 overflow-hidden select-none",
             // Only visuals taller than the frame fade out; the others fit whole.
-            feature.overflows && "mask-[linear-gradient(black_80%,transparent)]"
+            visual?.overflows && "mask-[linear-gradient(black_80%,transparent)]"
           )}
         >
-          {feature.visual}
+          {visual && <visual.Visual />}
         </div>
         <div className="flex flex-col text-left text-base">
-          <h3 className="font-medium">{feature.title}</h3>
-          <p className="mt-1 text-pretty text-muted-foreground">
-            {feature.description}
-          </p>
+          <h3 data-editable="text" data-prop="title" className="font-medium">
+            {feature.title}
+          </h3>
+          <p
+            data-editable="text"
+            data-type="text"
+            data-prop="description"
+            className="mt-1 text-pretty text-muted-foreground [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.85em] [&_code]:text-foreground"
+            dangerouslySetInnerHTML={{
+              __html: inlineMarkdown(feature.description),
+            }}
+          />
           {feature.href && (
             <Link
               href={feature.href}
               className="mt-6 w-fit rounded-lg border bg-background px-3 py-2 text-sm leading-none font-medium transition-colors hover:bg-muted"
             >
-              Learn more
+              <editable-text data-prop="link_label">
+                {feature.link_label}
+              </editable-text>
             </Link>
           )}
         </div>
@@ -232,12 +243,35 @@ function FeatureCard({
   )
 }
 
-function Code({ children }: { children: React.ReactNode }) {
-  return (
-    <code className="rounded bg-muted px-1 py-0.5 font-mono text-[0.85em] text-foreground">
-      {children}
-    </code>
-  )
+// The inline markdown a feature description allows: `code`, **bold**, *italic*.
+// Returns HTML for the description's rich text region; the region host styles
+// `code`, since markup inside a region can't keep attributes.
+const INLINE = /(`[^`]+`|\*\*[^*]+\*\*|\*[^*]+\*|_[^_]+_)/
+const ESCAPE = /\\([\\`*_{}[\]()#+\-.!>])/g
+
+function escapeHtml(text: string) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+}
+
+function inlineMarkdown(text?: string | null) {
+  if (!text) return ""
+  return text
+    .split(INLINE)
+    .map((part, index) => {
+      if (index % 2 === 0) return escapeHtml(part.replace(ESCAPE, "$1"))
+      if (part.startsWith("`")) {
+        return `<code>${escapeHtml(part.slice(1, -1))}</code>`
+      }
+      if (part.startsWith("**")) {
+        return `<strong>${escapeHtml(part.slice(2, -2))}</strong>`
+      }
+      return `<em>${escapeHtml(part.slice(1, -1))}</em>`
+    })
+    .join("")
 }
 
 // Card visuals. Decorative mocks built from real output and config, so they

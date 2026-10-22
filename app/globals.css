@@ -327,3 +327,21 @@
         }
     }
 }
+
+/* CloudCannon's Visual Editor sets .cms-editor-active on <body>. Blocks it
+   re-renders get no scroll reveal and would replay their entrance, so both
+   show at rest there. Empty arrays keep room for the editor's Add button. */
+.cms-editor-active .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+}
+
+.cms-editor-active .animate-slide-up-fade {
+    animation: none;
+}
+
+.cms-editor-active [data-editable="array"] {
+    min-width: 4rem;
+    min-height: 2rem;
+}

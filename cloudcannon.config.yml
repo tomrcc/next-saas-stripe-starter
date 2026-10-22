@@ -1,0 +1,947 @@
+timezone: Etc/UTC
+
+paths:
+  static: public
+  uploads: public/_static/blog # module:blog,changelog
+
+markdown:
+  engine: commonmark
+  options:
+    gfm: true
+    table: true
+    strikethrough: true
+    escape_snippets_in_code_blocks: true
+
+collection_groups:
+  - heading: Pages
+    collections:
+      - pages
+  # module:blog,changelog,docs start
+  - heading: Content
+    collections:
+      - blog # module:blog
+      - changelog # module:changelog
+      - docs # module:docs
+  # module:blog,changelog,docs end
+  - heading: Site
+    collections:
+      - data
+
+collections_config:
+  pages:
+    path: content/pages
+    url: /[slug]/
+    name: Pages
+    icon: wysiwyg
+    disable_add_folder: true
+    create:
+      path: "[relative_base_path]/{title|slugify}.[ext]"
+    schemas:
+      page_builder:
+        path: .cloudcannon/schemas/page-builder.md
+        name: Page builder page
+        icon: view_quilt
+        new_preview_url: /
+        _enabled_editors:
+          - visual
+          - data
+      # module:blog,changelog start
+      listing:
+        path: .cloudcannon/schemas/listing.md
+        name: Listing intro
+        icon: list
+        _enabled_editors:
+          - visual
+          - data
+      # module:blog,changelog end
+      legal:
+        path: .cloudcannon/schemas/legal.mdx
+        name: Legal page
+        icon: gavel
+        new_preview_url: /privacy/
+        _enabled_editors:
+          - visual
+          - content
+          - data
+    add_options:
+      - name: Page builder page
+        schema: page_builder
+        icon: view_quilt
+      - name: Legal page
+        schema: legal
+        icon: gavel
+    _inputs:
+      content_blocks:
+        type: array
+        label: Sections
+        options:
+          structures: _structures.content_blocks
+      meta_description:
+        type: textarea
+        label: Search description
+        comment: Shown in search results and social cards. The intro text on the page is the Description field.
+      updatedAt:
+        type: date
+        label: Last updated
+        instance_value: NOW
+        comment: The page shows a new date after the next build.
+
+  # module:blog start
+  blog:
+    path: content/blog
+    glob:
+      - "*.mdx"
+    url: /blog/[slug]/
+    name: Blog
+    icon: post_add
+    disable_add_folder: true
+    create:
+      path: "[relative_base_path]/{title|slugify}.[ext]"
+    _enabled_editors:
+      - visual
+      - content
+      - data
+    schemas:
+      default:
+        path: .cloudcannon/schemas/blog-post.mdx
+        name: Blog post
+        icon: post_add
+    add_options:
+      - name: Blog post
+        schema: default
+        icon: post_add
+        editor: content
+    _inputs:
+      image:
+        type: image
+        label: Cover image
+        options:
+          required: true
+      date:
+        type: date
+        instance_value: NOW
+        comment: The page shows a new date after the next build.
+      authors:
+        type: multiselect
+        options:
+          required: true
+          value_key: slug
+          preview:
+            text:
+              - key: name
+          values: data.authors
+      categories:
+        type: multiselect
+        options:
+          value_key: slug
+          preview:
+            text:
+              - key: title
+          values: data.categories
+      related:
+        type: multiselect
+        label: Related posts
+        comment: The first three show under the post.
+        options:
+          value_key: filename_without_ext
+          preview:
+            text:
+              - key: title
+          values: collections.blog
+
+  # module:blog end
+  # module:changelog start
+  changelog:
+    path: content/changelog
+    glob:
+      - "*.mdx"
+    url: /changelog/[slug]/
+    name: Changelog
+    icon: history
+    disable_add_folder: true
+    create:
+      path: "[relative_base_path]/{date|year}-{date|month}-{title|slugify}.[ext]"
+    _enabled_editors:
+      - visual
+      - content
+      - data
+    schemas:
+      default:
+        path: .cloudcannon/schemas/changelog-entry.mdx
+        name: Changelog entry
+        icon: history
+    add_options:
+      - name: Changelog entry
+        schema: default
+        icon: history
+        editor: content
+    _inputs:
+      image:
+        type: image
+        label: Cover image
+      date:
+        type: date
+        instance_value: NOW
+        comment: The page shows a new date after the next build.
+      author:
+        type: select
+        options:
+          allow_empty: true
+          value_key: slug
+          preview:
+            text:
+              - key: name
+          values: data.authors
+
+  # module:changelog end
+  # module:docs start
+  docs:
+    path: content/docs
+    glob:
+      - "*.mdx"
+    url: /docs/[slug]/
+    name: Docs
+    icon: menu_book
+    disable_add_folder: true
+    create:
+      path: "[relative_base_path]/{title|slugify}.[ext]"
+    _enabled_editors:
+      - visual
+      - content
+      - data
+    schemas:
+      default:
+        path: .cloudcannon/schemas/docs-page.mdx
+        name: Docs page
+        icon: menu_book
+    add_options:
+      - name: Docs page
+        schema: default
+        icon: menu_book
+        editor: content
+
+  # module:docs end
+  data:
+    path: ""
+    glob:
+      - data/*.json
+      - content/docs/meta.json # module:docs
+    name: Site data
+    icon: settings
+    disable_url: true
+    disable_add: true
+    disable_add_folder: true
+    disable_file_actions: true
+    _enabled_editors:
+      - data
+
+data_config:
+  # module:blog,changelog start
+  authors:
+    path: data/authors.json
+  categories:
+    path: data/categories.json
+  # module:blog,changelog end
+  site:
+    path: data/site.json
+  navigation:
+    path: data/navigation.json
+  footer:
+    path: data/footer.json
+  # module:blog,changelog start
+  pro_cta:
+    path: data/pro-cta.json
+
+  # module:blog,changelog end
+file_config:
+  # module:blog,changelog start
+  - glob: data/authors.json
+    _inputs:
+      $:
+        type: array
+        label: Authors
+        options:
+          structures: _structures.authors
+  - glob: data/categories.json
+    _inputs:
+      $:
+        type: array
+        label: Blog categories
+        options:
+          structures: _structures.categories
+  # module:blog,changelog end
+  - glob: data/site.json
+    _inputs:
+      $:
+        type: object
+        options:
+          preview:
+            icon: settings
+      name:
+        type: text
+        label: Site name
+        comment: Shown in the footer, page titles and social cards.
+      title:
+        type: text
+        label: Default title
+        comment: The browser and social-card title of pages without their own. The home page sets its title in its page file.
+      description:
+        type: textarea
+        comment: Shown under the logo in the footer and as the default search description.
+  - glob: data/navigation.json
+    _inputs:
+      $:
+        type: array
+        label: Header links
+        options:
+          structures: _structures.nav_links
+  - glob: data/footer.json
+    _inputs:
+      $:
+        type: array
+        label: Footer columns
+        options:
+          structures: _structures.footer_columns
+  # module:blog,changelog start
+  - glob: data/pro-cta.json
+    _inputs:
+      $:
+        type: object
+        label: Pro card
+        options:
+          preview:
+            icon: auto_awesome
+      eyebrow:
+        type: text
+        comment: The card sits in the sidebar of blog posts and changelog entries and links to the Pro section of the README.
+      title:
+        type: text
+      description:
+        type: textarea
+  # module:blog,changelog end
+  # module:docs start
+  - glob: content/docs/meta.json
+    _inputs:
+      $:
+        type: object
+        options:
+          preview:
+            icon: menu_book
+      pages:
+        type: array
+        label: Docs sidebar order
+        comment: A docs page shows in the sidebar only once it is in this list.
+      pages[*]:
+        type: select
+        label: Docs page
+        options:
+          value_key: filename_without_ext
+          preview:
+            text:
+              - key: title
+          values: collections.docs
+
+  # module:docs end
+_inputs:
+  _schema:
+    hidden: true
+  $.title:
+    type: text
+  $.description:
+    type: textarea
+
+_select_data:
+  features:
+    # module:auth start
+    - name: Authentication
+      id: auth
+    # module:auth end
+    # module:billing start
+    - name: Billing
+      id: billing
+    # module:billing end
+    # module:admin start
+    - name: Admin panel
+      id: admin
+    # module:admin end
+    # module:docs start
+    - name: Documentation
+      id: docs
+    # module:docs end
+    # module:blog start
+    - name: Blog
+      id: blog
+    # module:blog end
+    # module:changelog start
+    - name: Changelog
+      id: changelog
+    # module:changelog end
+  lucide_icons:
+    - name: Layout grid
+      id: layout-grid
+    - name: Scale
+      id: scale
+    - name: Braces
+      id: braces
+    - name: Bot
+      id: bot
+    - name: Zap
+      id: zap
+
+_structures:
+  content_blocks:
+    style: modal
+    values_from_glob:
+      - /components/marketing/*.cloudcannon.structure-value.yml
+
+  button:
+    values:
+      - label: Button
+        icon: ads_click
+        picker_preview:
+          text:
+            - Button
+          icon:
+            - ads_click
+        preview:
+          text:
+            - key: label
+            - Button
+          icon:
+            - ads_click
+        value:
+          label: Button
+          href: /
+        _inputs:
+          label:
+            type: text
+          href:
+            type: url
+            label: Link
+
+  showcase_features:
+    style: modal
+    values:
+      - label: Feature card
+        icon: view_carousel
+        picker_preview:
+          text:
+            - Feature card
+          icon:
+            - view_carousel
+        preview:
+          text:
+            - key: title
+            - Feature card
+          subtext:
+            - key: visual
+          icon:
+            - view_carousel
+        value:
+          title:
+          description:
+          visual: prune_terminal
+          href:
+          link_label: Learn more
+        _inputs:
+          title:
+            type: text
+          description:
+            type: markdown
+            options:
+              bold: true
+              italic: true
+              code_inline: true
+              removeformat: true
+              undo: true
+              redo: true
+          visual:
+            type: select
+            label: Illustration
+            options:
+              value_key: id
+              preview:
+                text:
+                  - key: name
+              values:
+                - name: Prune command in a terminal
+                  id: prune_terminal
+                - name: Module dependency graph
+                  id: dependency_graph
+                - name: Feature flags config file
+                  id: config_file
+                - name: Services check
+                  id: services_check
+          href:
+            type: url
+            label: Link
+            comment: Leave empty to hide the link button.
+          link_label:
+            type: text
+            label: Link label
+
+  showcase_facts:
+    style: modal
+    values:
+      - label: Fact
+        icon: verified
+        picker_preview:
+          text:
+            - Fact
+          icon:
+            - verified
+        preview:
+          text:
+            - key: title
+            - Fact
+          subtext:
+            - key: description
+          icon:
+            - verified
+        value:
+          icon: zap
+          title:
+          description:
+        _inputs:
+          icon:
+            type: select
+            comment: Adding an icon to this list needs a developer.
+            options:
+              value_key: id
+              preview:
+                text:
+                  - key: name
+              values: _select_data.lucide_icons
+          title:
+            type: text
+          description:
+            type: textarea
+
+  approaches:
+    style: modal
+    values:
+      - label: Approach
+        icon: compare
+        picker_preview:
+          text:
+            - Approach
+          icon:
+            - compare
+        preview:
+          text:
+            - key: title
+            - Approach
+          icon:
+            - compare
+        value:
+          title:
+          points: []
+          highlighted: false
+        _inputs:
+          title:
+            type: text
+          points:
+            type: array
+          points[*]:
+            type: text
+            label: Point
+          highlighted:
+            type: switch
+            comment: Highlighted cards get the accent border and check marks.
+
+  # module:blog,changelog start
+  authors:
+    style: modal
+    values:
+      - label: Author
+        icon: person
+        picker_preview:
+          text:
+            - Author
+          icon:
+            - person
+        preview:
+          text:
+            - key: name
+            - Author
+          subtext:
+            - key: role
+          image:
+            - key: image
+          icon:
+            - person
+        value:
+          slug:
+          name:
+          role:
+          image:
+          twitter:
+        _inputs:
+          slug:
+            type: text
+            label: ID
+            comment: Posts refer to the author by this ID. Changing it unlinks their posts.
+          name:
+            type: text
+          role:
+            type: text
+          image:
+            type: image
+            label: Avatar
+            options:
+              paths:
+                uploads: public/_static/avatars
+          twitter:
+            type: text
+            label: X (Twitter) handle
+            comment: Without the @.
+
+  categories:
+    style: modal
+    values:
+      - label: Category
+        icon: label
+        picker_preview:
+          text:
+            - Category
+          icon:
+            - label
+        preview:
+          text:
+            - key: title
+            - Category
+          subtext:
+            - key: description
+          icon:
+            - label
+        value:
+          slug:
+          title:
+          description:
+        _inputs:
+          slug:
+            type: text
+            label: ID
+            comment: Posts refer to the category by this ID, and it is the ?category= value in blog links.
+          title:
+            type: text
+          description:
+            type: textarea
+
+  # module:blog,changelog end
+  nav_links:
+    style: modal
+    values:
+      - label: Header link
+        icon: link
+        picker_preview:
+          text:
+            - Header link
+          icon:
+            - link
+        preview:
+          text:
+            - key: title
+            - Header link
+          subtext:
+            - key: href
+          icon:
+            - link
+        value:
+          title:
+          href:
+          external: false
+          feature:
+        _inputs:
+          title:
+            type: text
+          href:
+            type: url
+            label: Link
+          external:
+            type: switch
+            label: Open in a new tab
+          feature:
+            type: select
+            label: Module
+            comment: The link hides while this module is off. Authentication, Billing and Admin are off in the editing preview.
+            options:
+              allow_empty: true
+              value_key: id
+              preview:
+                text:
+                  - key: name
+              values: _select_data.features
+
+  footer_columns:
+    style: modal
+    values:
+      - label: Footer column
+        icon: view_column
+        picker_preview:
+          text:
+            - Footer column
+          icon:
+            - view_column
+        preview:
+          text:
+            - key: title
+            - Footer column
+          icon:
+            - view_column
+        value:
+          title:
+          links: []
+        _inputs:
+          title:
+            type: text
+          links:
+            type: array
+            options:
+              structures: _structures.footer_links
+
+  footer_links:
+    style: modal
+    values:
+      - label: Footer link
+        icon: link
+        picker_preview:
+          text:
+            - Footer link
+          icon:
+            - link
+        preview:
+          text:
+            - key: title
+            - Footer link
+          subtext:
+            - key: href
+          icon:
+            - link
+        value:
+          title:
+          href:
+          feature:
+        _inputs:
+          title:
+            type: text
+          href:
+            type: url
+            label: Link
+          feature:
+            type: select
+            label: Module
+            comment: The link hides while this module is off, and a column with no visible links hides too. Authentication, Billing and Admin are off in the editing preview.
+            options:
+              allow_empty: true
+              value_key: id
+              preview:
+                text:
+                  - key: name
+              values: _select_data.features
+
+_editables:
+  content:
+    blockquote: true
+    bold: true
+    bulletedlist: true
+    code_block: true
+    code_inline: true
+    format: p h2 h3 h4
+    horizontalrule: true
+    image: true
+    italic: true
+    link: true
+    numberedlist: true
+    redo: true
+    removeformat: true
+    snippet: true
+    strike: true
+    table: true
+    undo: true
+
+_snippets:
+  # module:docs start
+  callout:
+    template: mdx_paired_component
+    inline: false
+    preview:
+      text:
+        - Callout
+      subtext:
+        - key: type
+      icon: info
+    picker_preview:
+      text: Callout
+      icon: info
+    definitions:
+      component_name: Callout
+      content_key: content
+      named_args:
+        - editor_key: type
+          type: string
+          optional: true
+          remove_empty: true
+    _inputs:
+      type:
+        type: select
+        comment: Leave empty for an info callout.
+        options:
+          allow_empty: true
+          value_key: id
+          preview:
+            text:
+              - key: name
+          values:
+            - name: Warning
+              id: warn
+            - name: Error
+              id: error
+            - name: Success
+              id: success
+            - name: Tip
+              id: tip
+      content:
+        type: markdown
+        options:
+          bold: true
+          code_inline: true
+          italic: true
+          link: true
+          removeformat: true
+          undo: true
+          redo: true
+
+  cards:
+    snippet: "<Cards>[[cards]]</Cards>"
+    inline: false
+    preview:
+      text:
+        - Link cards
+      icon: view_module
+    picker_preview:
+      text: Link cards
+      icon: view_module
+    params:
+      cards:
+        parser: repeating
+        options:
+          snippet: "<Card [[card_args]] />"
+          editor_key: cards
+          default_length: 2
+          style:
+            output: block
+            between: "\n"
+            block:
+              leading: "\n"
+              trailing: "\n"
+              indent: "  "
+      card_args:
+        parser: key_values
+        options:
+          models:
+            - editor_key: title
+              type: string
+            - editor_key: href
+              type: string
+            - editor_key: description
+              type: string
+              optional: true
+              remove_empty: true
+          format:
+            root_value_delimiter: "="
+            root_pair_delimiter:
+              - " "
+            string_boundary:
+              - '"'
+    _inputs:
+      cards:
+        type: array
+        options:
+          structures: _structures.doc_cards
+    _structures:
+      doc_cards:
+        style: modal
+        values:
+          - label: Card
+            icon: link
+            picker_preview:
+              text:
+                - Card
+              icon:
+                - link
+            preview:
+              text:
+                - key: title
+                - Card
+              subtext:
+                - key: href
+              icon:
+                - link
+            value:
+              title:
+              href:
+              description:
+            _inputs:
+              title:
+                type: text
+              href:
+                type: url
+                label: Link
+              description:
+                type: text
+
+  # module:docs end
+  section:
+    template: mdx_paired_component
+    inline: false
+    preview:
+      text:
+        - Numbered section
+      icon: format_list_numbered
+    picker_preview:
+      text: Numbered section
+      icon: format_list_numbered
+    definitions:
+      component_name: Section
+      content_key: content
+      named_args: []
+    _inputs:
+      content:
+        type: markdown
+        comment: Start with a level-2 heading; it becomes the section title and a table of contents entry.
+        options:
+          blockquote: true
+          bold: true
+          bulletedlist: true
+          code_inline: true
+          format: p h2 h3
+          italic: true
+          link: true
+          numberedlist: true
+          redo: true
+          removeformat: true
+          strike: true
+          table: true
+          undo: true
+
+  mdx_comment:
+    snippet: "{/*[[comment]]*/}"
+    inline: false
+    preview:
+      text:
+        - Note for editors (not shown on the page)
+      icon: sticky_note_2
+    picker_preview:
+      text: Hidden note
+      icon: sticky_note_2
+    params:
+      comment:
+        parser: content
+        options:
+          editor_key: comment
+          raw: true
+    _inputs:
+      comment:
+        type: textarea
+        label: Note

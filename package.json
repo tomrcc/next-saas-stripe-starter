@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:cloudcannon": "node scripts/build-cloudcannon.js",
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
@@ -20,6 +21,7 @@
   "dependencies": {
     "@base-ui/react": "^1.8.0",
     "@better-auth/stripe": "^1.7.5",
+    "@cloudcannon/editable-regions": "0.0.22",
     "@neondatabase/serverless": "^1.1.0",
     "better-auth": "^1.7.5",
     "class-variance-authority": "^0.7.1",

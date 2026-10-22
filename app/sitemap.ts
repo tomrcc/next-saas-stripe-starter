@@ -4,8 +4,11 @@ import { siteConfig } from "@/config/site"
 import { blogSource } from "@/lib/content/blog" // module:blog
 import { changelogSource } from "@/lib/content/changelog" // module:changelog
 import { docsSource } from "@/lib/content/docs" // module:docs
-import { legalSource } from "@/lib/content/legal"
+import { isSchema, pagesSource } from "@/lib/content/pages"
 import { getFeatures } from "@/lib/features/resolve"
+
+// Generated once at build; the static export requires saying so.
+export const dynamic = "force-static"
 
 const absolute = (path: string) => new URL(path, siteConfig.url).toString()
 
@@ -86,13 +89,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
   // module:changelog end
 
-  for (const page of legalSource.getPages()) {
-    entries.push({
-      url: absolute(page.url),
-      lastModified: page.data.updatedAt,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    })
+  for (const page of pagesSource.getPages()) {
+    if (page.slugs.length === 0) continue
+    if (isSchema(page, "legal")) {
+      entries.push({
+        url: absolute(page.url),
+        lastModified: page.data.updatedAt,
+        changeFrequency: "yearly",
+        priority: 0.3,
+      })
+    } else if (isSchema(page, "page_builder")) {
+      entries.push({
+        url: absolute(page.url),
+        lastModified: now,
+        changeFrequency: "monthly",
+        priority: 0.7,
+      })
+    }
   }
 
   return entries

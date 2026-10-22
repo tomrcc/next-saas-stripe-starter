@@ -6,16 +6,21 @@ import { BlurImage } from "@/components/shared/blur-image"
 import { Pagination } from "@/components/shared/pagination"
 import { getBlurDataURL } from "@/lib/content/blur"
 import { changelogSource } from "@/lib/content/changelog"
+import { getSitePage } from "@/lib/content/pages"
+import { isEditingBuild } from "@/lib/editing-build"
 import { requireFeature } from "@/lib/features/guard"
 import { buildMetadata } from "@/lib/metadata"
 import { paginate } from "@/lib/pagination"
 import { formatDate } from "@/lib/utils"
 
-export const metadata = buildMetadata({
-  title: "Changelog",
-  description: "New features, fixes and improvements.",
-  path: "/changelog",
-})
+export function generateMetadata() {
+  const { data } = getSitePage("changelog", "listing")
+  return buildMetadata({
+    title: data.title,
+    description: data.meta_description,
+    path: "/changelog",
+  })
+}
 
 const PAGE_SIZE = 10
 
@@ -23,7 +28,9 @@ type Props = { searchParams: Promise<{ page?: string }> }
 
 export default async function ChangelogPage({ searchParams }: Props) {
   await requireFeature("changelog")
-  const { page: rawPage } = await searchParams
+  const intro = getSitePage("changelog", "listing").data
+  // A static export has no query string: render page 1.
+  const { page: rawPage } = isEditingBuild ? {} : await searchParams
 
   const sorted = changelogSource
     .getPages()
@@ -47,12 +54,22 @@ export default async function ChangelogPage({ searchParams }: Props) {
   return (
     <>
       <GridSection lines innerClassName="py-12">
-        <h1 className="font-display text-4xl font-medium sm:text-5xl sm:leading-[1.15]">
-          Changelog
+        <h1
+          data-editable="text"
+          data-prop="title"
+          className="font-display text-4xl font-medium sm:text-5xl sm:leading-[1.15]"
+        >
+          {intro.title}
         </h1>
-        <p className="mt-2 text-lg text-muted-foreground sm:text-lg">
-          New features, fixes and improvements.
-        </p>
+        {intro.description && (
+          <p
+            data-editable="text"
+            data-prop="description"
+            className="mt-2 text-lg text-muted-foreground sm:text-lg"
+          >
+            {intro.description}
+          </p>
+        )}
       </GridSection>
 
       {/* Each date sticks under the site header while its entry scrolls past. */}

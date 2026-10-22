@@ -1,0 +1,28 @@
+label: Comparison
+icon: compare
+picker_preview:
+  text:
+    - Comparison
+  icon:
+    - compare
+preview:
+  text:
+    - key: title
+    - Comparison
+  icon:
+    - compare
+value:
+  _type: why-modular
+  title:
+  description:
+  approaches: []
+_inputs:
+  title:
+    type: text
+  description:
+    type: textarea
+  approaches:
+    type: array
+    label: Cards
+    options:
+      structures: _structures.approaches

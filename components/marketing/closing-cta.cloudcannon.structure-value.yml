@@ -1,0 +1,32 @@
+label: Closing call to action
+icon: campaign
+picker_preview:
+  text:
+    - Closing call to action
+  icon:
+    - campaign
+preview:
+  text:
+    - key: title
+    - Closing call to action
+  icon:
+    - campaign
+value:
+  _type: closing-cta
+  title:
+  description:
+  secondary_button:
+    label: About Pro
+    href: https://github.com/mickasmt/next-saas-stripe-starter#pro-version
+_inputs:
+  title:
+    type: text
+  description:
+    type: textarea
+  secondary_button:
+    type: object
+    comment: The first button and the GitHub card come from the site setup.
+    options:
+      structures: _structures.button
+      preview:
+        icon: ads_click

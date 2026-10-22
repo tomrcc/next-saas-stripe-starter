@@ -1,0 +1,12 @@
+[
+  {
+    "slug": "news",
+    "title": "News",
+    "description": "Updates and announcements."
+  },
+  {
+    "slug": "education",
+    "title": "Education",
+    "description": "Guides and deep dives."
+  }
+]

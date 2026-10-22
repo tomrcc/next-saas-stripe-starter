@@ -1,33 +1,19 @@
 // Authors and categories referenced by key in the blog posts' frontmatter.
+// Editors manage both lists in data/.
 
-export const blogCategories = {
-  news: {
-    title: "News",
-    description: "Updates and announcements.",
-  },
-  education: {
-    title: "Education",
-    description: "Guides and deep dives.",
-  },
-} satisfies Record<string, { title: string; description: string }>
+import authors from "@/data/authors.json"
+import categories from "@/data/categories.json"
 
-export const blogAuthors = {
-  mickasmt: {
-    name: "mickasmt",
-    role: "Maintainer",
-    image: "/_static/avatars/mickasmt.webp",
-    twitter: "miickasmt",
-  },
-  shadcn: {
-    name: "shadcn",
-    role: "Contributor",
-    image: "/_static/avatars/shadcn.jpeg",
-    twitter: "shadcn",
-  },
-} satisfies Record<
-  string,
-  { name: string; role: string; image: string; twitter: string }
->
+type Category = { title: string; description: string }
+type Author = { name: string; role: string; image: string; twitter: string }
 
-export type BlogCategory = keyof typeof blogCategories
-export type BlogAuthor = keyof typeof blogAuthors
+export const blogCategories: Record<string, Category> = Object.fromEntries(
+  categories.map(({ slug, ...category }) => [slug, category])
+)
+
+export const blogAuthors: Record<string, Author> = Object.fromEntries(
+  authors.map(({ slug, ...author }) => [slug, author])
+)
+
+export type BlogCategory = string
+export type BlogAuthor = string

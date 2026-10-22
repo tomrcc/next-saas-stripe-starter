@@ -1,0 +1,29 @@
+[
+  {
+    "title": "Product",
+    "links": [
+      { "title": "Pricing", "href": "/pricing", "feature": "billing" },
+      { "title": "Dashboard", "href": "/dashboard", "feature": "auth" }
+    ]
+  },
+  {
+    "title": "Resources",
+    "links": [
+      { "title": "Blog", "href": "/blog", "feature": "blog" },
+      { "title": "Changelog", "href": "/changelog", "feature": "changelog" },
+      { "title": "Docs", "href": "/docs", "feature": "docs" },
+      {
+        "title": "GitHub",
+        "href": "https://github.com/mickasmt/next-saas-stripe-starter",
+        "feature": null
+      }
+    ]
+  },
+  {
+    "title": "Legal",
+    "links": [
+      { "title": "Terms", "href": "/terms", "feature": null },
+      { "title": "Privacy", "href": "/privacy", "feature": null }
+    ]
+  }
+]

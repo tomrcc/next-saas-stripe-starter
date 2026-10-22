@@ -1,20 +1,38 @@
-import { GitFork, Scale, Sparkles, Star } from "lucide-react"
+import { GitFork, Scale, Star } from "lucide-react"
 import Link from "next/link"
 
 import { GridSection } from "@/components/marketing/grid-section"
 import { Reveal } from "@/components/marketing/reveal"
-import { getStarterCta } from "@/components/marketing/starter-cta"
+import {
+  SecondaryButton,
+  type ButtonContent,
+} from "@/components/marketing/secondary-button"
+import type { StarterCta } from "@/components/marketing/starter-cta"
 import { GitHubIcon } from "@/components/shared/icons"
 import { buttonVariants } from "@/components/ui/button"
 import { siteConfig } from "@/config/site"
-import { getGithubRepo } from "@/lib/github"
+import type { GithubRepo } from "@/lib/github"
 import { cn } from "@/lib/utils"
 
 // Closes the landing page: the last call to action next to a card of the
 // GitHub repository, whose stars and forks are the starter's strongest proof.
 
-export async function ClosingCta() {
-  const [repo, cta] = await Promise.all([getGithubRepo(), getStarterCta()])
+export type ClosingCtaBlock = {
+  title?: string | null
+  description?: string | null
+  secondary_button?: ButtonContent | null
+  // From the route (block extras), not content.
+  github?: GithubRepo | null
+  cta?: StarterCta | null
+}
+
+export function ClosingCta({
+  title,
+  description,
+  secondary_button,
+  github: repo,
+  cta,
+}: ClosingCtaBlock) {
   const format = new Intl.NumberFormat("en")
   const [owner, name] = new URL(siteConfig.links.github).pathname
     .slice(1)
@@ -42,37 +60,40 @@ export async function ClosingCta() {
     >
       <div className="grid items-center gap-12 md:grid-cols-[1fr_minmax(0,420px)] md:gap-16">
         <Reveal className="text-center md:text-left">
-          <h2 className="font-display text-4xl font-medium text-balance sm:text-5xl sm:leading-[1.1]">
-            Ship the product, not the plumbing
-          </h2>
-          <p className="mt-5 text-lg text-pretty text-muted-foreground">
-            Start from the free, modular starter today. Add Pro when you want
-            onboarding, emails and team billing done for you.
-          </p>
+          {title && (
+            <h2
+              data-editable="text"
+              data-prop="title"
+              className="font-display text-4xl font-medium text-balance sm:text-5xl sm:leading-[1.1]"
+            >
+              {title}
+            </h2>
+          )}
+          {description && (
+            <p
+              data-editable="text"
+              data-prop="description"
+              className="mt-5 text-lg text-pretty text-muted-foreground"
+            >
+              {description}
+            </p>
+          )}
           <div className="mt-8 flex flex-wrap justify-center gap-3 md:justify-start">
-            <Link
-              href={cta.href}
-              {...(cta.external && { target: "_blank", rel: "noreferrer" })}
-              className={cn(
-                buttonVariants({ size: "lg" }),
-                "px-5 shadow-sm hover:ring-4 hover:ring-neutral-200 dark:hover:ring-white/10"
-              )}
-            >
-              {cta.label}
-            </Link>
-            <Link
-              href={siteConfig.links.pro}
-              target="_blank"
-              rel="noreferrer"
-              className={cn(
-                buttonVariants({ variant: "outline", size: "lg" }),
-                "px-5 shadow-sm hover:ring-4 hover:ring-neutral-200",
-                "dark:border-violet-400/40 dark:bg-violet-400/10 dark:text-violet-100 dark:hover:bg-violet-400/20 dark:hover:ring-violet-400/20"
-              )}
-            >
-              <Sparkles className="text-violet-500 dark:text-violet-300" />
-              About Pro
-            </Link>
+            {cta && (
+              <Link
+                href={cta.href}
+                {...(cta.external && { target: "_blank", rel: "noreferrer" })}
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "px-5 shadow-sm hover:ring-4 hover:ring-neutral-200 dark:hover:ring-white/10"
+                )}
+              >
+                {cta.label}
+              </Link>
+            )}
+            {secondary_button && (
+              <SecondaryButton {...secondary_button} prop="secondary_button" />
+            )}
           </div>
         </Reveal>
 
@@ -96,7 +117,11 @@ export async function ClosingCta() {
               </span>
             </div>
 
-            <p className="mt-4 text-sm text-pretty text-muted-foreground">
+            <p
+              data-editable="text"
+              data-prop="@data[site].description"
+              className="mt-4 text-sm text-pretty text-muted-foreground"
+            >
               {siteConfig.description}
             </p>
 

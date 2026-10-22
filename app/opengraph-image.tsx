@@ -7,6 +7,8 @@ import { siteConfig } from "@/config/site"
 export const alt = siteConfig.name
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
+// Rendered once at build; the static export requires saying so.
+export const dynamic = "force-static"
 
 export default function OpengraphImage() {
   return new ImageResponse(

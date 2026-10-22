@@ -2,6 +2,7 @@ import Link from "next/link"
 import { ArrowUpRight, Sparkles } from "lucide-react"
 
 import { siteConfig } from "@/config/site"
+import proCta from "@/data/pro-cta.json"
 import { cn } from "@/lib/utils"
 
 // Sidebar card on blog and changelog posts, pointing at the Pro page instead
@@ -20,12 +21,23 @@ export function ProCtaCard({ className }: { className?: string }) {
       <ArrowUpRight className="absolute top-4 right-4 size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
       <span className="flex items-center gap-1.5 text-xs font-medium text-violet-600 dark:text-violet-400">
         <Sparkles className="size-3.5" />
-        SaaS Starter Pro
+        <editable-text data-prop="@data[pro_cta].eyebrow">
+          {proCta.eyebrow}
+        </editable-text>
       </span>
-      <p className="mt-2 pr-6 text-sm font-semibold">About Pro</p>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Onboarding, teams and billing, ready to ship. See the README for
-        details.
+      <p
+        data-editable="text"
+        data-prop="@data[pro_cta].title"
+        className="mt-2 pr-6 text-sm font-semibold"
+      >
+        {proCta.title}
+      </p>
+      <p
+        data-editable="text"
+        data-prop="@data[pro_cta].description"
+        className="mt-1 text-sm text-muted-foreground"
+      >
+        {proCta.description}
       </p>
     </Link>
   )

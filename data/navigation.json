@@ -1,0 +1,20 @@
+[
+  {
+    "title": "Pricing",
+    "href": "/pricing",
+    "external": false,
+    "feature": "billing"
+  },
+  {
+    "title": "Blog",
+    "href": "/blog",
+    "external": false,
+    "feature": "blog"
+  },
+  {
+    "title": "Docs",
+    "href": "/docs",
+    "external": false,
+    "feature": "docs"
+  }
+]

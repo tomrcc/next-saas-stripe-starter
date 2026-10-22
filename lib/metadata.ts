@@ -14,6 +14,8 @@ const defaultImage = {
 type BuildMetadataOptions = {
   // Page title without the site name: the root layout's template adds it.
   title?: string
+  // Complete title, used as is (the home page).
+  fullTitle?: string
   description?: string
   // Pathname of the page, used as canonical and Open Graph URL.
   path?: string
@@ -25,19 +27,26 @@ type BuildMetadataOptions = {
 // Single source of per-page metadata: title, canonical URL and social cards.
 export function buildMetadata({
   title,
+  fullTitle: givenFullTitle,
   description = siteConfig.description,
   path = "/",
   image,
   noIndex,
 }: BuildMetadataOptions = {}): Metadata {
   // Social cards have no title template, so they spell the full title out.
-  const fullTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.title
+  const fullTitle =
+    givenFullTitle ??
+    (title ? `${title} | ${siteConfig.name}` : siteConfig.title)
   // Social platforms ignore SVG, so an SVG cover falls back to the site card.
   const custom = image && !image.endsWith(".svg") ? image : undefined
   const images = custom ? [custom] : [defaultImage]
 
   return {
-    ...(title ? { title } : {}),
+    ...(givenFullTitle
+      ? { title: { absolute: givenFullTitle } }
+      : title
+        ? { title }
+        : {}),
     description,
     alternates: { canonical: path },
     openGraph: {

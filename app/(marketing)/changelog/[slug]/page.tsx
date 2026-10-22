@@ -1,14 +1,13 @@
 import { notFound } from "next/navigation"
 
 import { getMDXComponents } from "@/components/content/mdx-components"
+import { PostAuthors } from "@/components/content/post-authors"
 import { ProCtaCard } from "@/components/content/pro-cta-card"
 import { ShareRow } from "@/components/content/share-row"
 import { TableOfContents } from "@/components/content/table-of-contents"
 import { GridSection } from "@/components/marketing/grid-section"
 import { BlurImage } from "@/components/shared/blur-image"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { blogAuthors, type BlogAuthor } from "@/config/blog"
 import { getBlurDataURL } from "@/lib/content/blur"
 import { changelogSource } from "@/lib/content/changelog"
 import { requireFeature } from "@/lib/features/guard"
@@ -24,9 +23,6 @@ export default async function ChangelogEntryPage({ params }: Props) {
   if (!entry) notFound()
 
   const MDX = entry.data.body
-  const author = entry.data.author
-    ? blogAuthors[entry.data.author as BlogAuthor]
-    : undefined
   const blurDataURL = await getBlurDataURL(entry.data.image)
 
   return (
@@ -42,11 +38,19 @@ export default async function ChangelogEntryPage({ params }: Props) {
               Last updated · {formatDate(entry.data.date)}
             </span>
           </div>
-          <h1 className="mt-5 font-display text-3xl font-medium text-balance sm:text-4xl sm:leading-[1.25]">
+          <h1
+            data-editable="text"
+            data-prop="title"
+            className="mt-5 font-display text-3xl font-medium text-balance sm:text-4xl sm:leading-[1.25]"
+          >
             {entry.data.title}
           </h1>
           {entry.data.description && (
-            <p className="mt-5 text-muted-foreground sm:text-lg">
+            <p
+              data-editable="text"
+              data-prop="description"
+              className="mt-5 text-muted-foreground sm:text-lg"
+            >
               {entry.data.description}
             </p>
           )}
@@ -59,7 +63,11 @@ export default async function ChangelogEntryPage({ params }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-3">
           <div className="md:col-span-2">
             {entry.data.image && (
-              <div className="relative aspect-[1200/630] w-full overflow-hidden">
+              <div
+                data-editable="image"
+                data-prop-src="image"
+                className="relative aspect-[1200/630] w-full overflow-hidden"
+              >
                 <BlurImage
                   src={entry.data.image}
                   alt={entry.data.title}
@@ -73,32 +81,25 @@ export default async function ChangelogEntryPage({ params }: Props) {
               </div>
             )}
 
-            <article className="prose-neutral dark:prose-invert lg:prose-lg prose max-w-none px-5 py-10 sm:px-12 prose-headings:scroll-mt-24 prose-headings:font-display prose-a:font-medium prose-a:text-foreground prose-a:underline-offset-4 prose-img:rounded-xl prose-img:border">
+            <article
+              data-editable="text"
+              data-type="block"
+              data-prop="@content"
+              className="prose-neutral dark:prose-invert lg:prose-lg prose max-w-none px-5 py-10 sm:px-12 prose-headings:scroll-mt-24 prose-headings:font-display prose-a:font-medium prose-a:text-foreground prose-a:underline-offset-4 prose-img:rounded-xl prose-img:border"
+            >
               <MDX components={getMDXComponents()} />
             </article>
           </div>
 
           <aside className="hidden border-l border-grid-border bg-muted/40 p-10 md:block">
             <div className="sticky top-20">
-              {author && (
-                <div className="pb-5">
-                  <p className="text-sm text-muted-foreground">Written by</p>
-                  <div className="mt-3 flex items-center gap-3">
-                    <Avatar className="size-9 border">
-                      <AvatarImage src={author.image} alt={author.name} />
-                      <AvatarFallback>{author.name.slice(0, 2)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="text-sm leading-none font-semibold">
-                        {author.name}
-                      </p>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {author.role}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
+              <div
+                data-editable="component"
+                data-component="post-authors"
+                data-prop-author="author"
+              >
+                <PostAuthors author={entry.data.author} />
+              </div>
 
               <ShareRow title={entry.data.title} className="pb-5" />
 

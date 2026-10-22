@@ -1,9 +1,11 @@
 import { siteConfig } from "@/config/site"
 import { isFeatureEnabled } from "@/lib/features/resolve"
 
+export type StarterCta = { label: string; href: string; external: boolean }
+
 // The starter is free: calls to action invite to try the demo or grab the
 // code, never to sign up. With auth off there is no demo to log into.
-export async function getStarterCta() {
+export async function getStarterCta(): Promise<StarterCta> {
   if (await isFeatureEnabled("auth")) {
     return { label: "Try the demo", href: "/login", external: false }
   }

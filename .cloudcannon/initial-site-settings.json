@@ -1,0 +1,11 @@
+{
+  "ssg": "nextjs",
+  "mode": "hosted",
+  "build": {
+    "install_command": "pnpm i",
+    "build_command": "pnpm build:cloudcannon",
+    "output_path": "out",
+    "preserved_paths": "node_modules/,.next/",
+    "node_version": "22"
+  }
+}

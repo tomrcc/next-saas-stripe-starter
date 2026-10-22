@@ -1,0 +1,50 @@
+label: Modules showcase
+icon: hub
+picker_preview:
+  text:
+    - Modules showcase
+  icon:
+    - hub
+preview:
+  text:
+    - key: title
+    - Modules showcase
+  subtext:
+    - key: eyebrow
+  icon:
+    - hub
+value:
+  _type: modules-showcase
+  eyebrow_icon: layout-grid
+  eyebrow:
+  title:
+  description:
+  features: []
+  facts: []
+_inputs:
+  eyebrow_icon:
+    type: select
+    label: Eyebrow icon
+    comment: Adding an icon to this list needs a developer.
+    options:
+      value_key: id
+      preview:
+        text:
+          - key: name
+      values: _select_data.lucide_icons
+  eyebrow:
+    type: text
+  title:
+    type: text
+  description:
+    type: textarea
+  features:
+    type: array
+    label: Feature cards
+    comment: The interactive panel demo above the cards is part of the design.
+    options:
+      structures: _structures.showcase_features
+  facts:
+    type: array
+    options:
+      structures: _structures.showcase_facts

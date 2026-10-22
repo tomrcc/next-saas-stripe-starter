@@ -1,7 +1,8 @@
 import { loader } from "fumadocs-core/source"
-import { pageSchema } from "fumadocs-core/source/schema"
 import { defineCollections } from "fumadocs-mdx/macro"
 import { z } from "zod"
+
+import { optionalString, pageFields } from "@/lib/content/schema"
 
 // Every entry is rendered in full on /changelog, newest first, and also gets
 // its own permalink at /changelog/[slug] (see that route for the single-entry
@@ -9,11 +10,11 @@ import { z } from "zod"
 const changelog = defineCollections({
   type: "doc",
   dir: "content/changelog",
-  schema: pageSchema.extend({
+  schema: pageFields.extend({
     date: z.coerce.date(),
-    image: z.string().optional(),
+    image: optionalString,
     // Key of config/blog.ts's authors.
-    author: z.string().optional(),
+    author: optionalString,
   }),
 })
 
