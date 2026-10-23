@@ -136,7 +136,9 @@ export function PanelDemo() {
 
   useEffect(() => {
     const el = rootRef.current
-    if (!el) return
+    // The Visual Editor diffs a fresh render into this DOM on every edit;
+    // autoplay changing the same nodes throws there, so the demo stays still.
+    if (!el || (window as { inEditorMode?: boolean }).inEditorMode) return
     const observer = new IntersectionObserver(([entry]) =>
       setInView(entry.isIntersecting)
     )
