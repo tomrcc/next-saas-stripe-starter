@@ -36,7 +36,7 @@ export function LegalPage({ page }: { page: SitePageOf<"legal"> }) {
             <MDX
               components={getMDXComponents({
                 h2: LegalHeading,
-                Section: LegalSection,
+                section: LegalSection,
               })}
             />
           </article>
@@ -64,9 +64,9 @@ export function getLegalMetadata(page: SitePageOf<"legal">) {
   })
 }
 
-// A `<Section>` wraps one `## heading` and its content in the MDX file. The
+// remarkSections wraps each `## heading` and its content in a <section>. The
 // rail joins the numbered circles and stops at the last section.
-function LegalSection({ children }: { children: React.ReactNode }) {
+function LegalSection({ children }: { children?: React.ReactNode }) {
   return (
     <section className="relative pb-6 before:absolute before:inset-y-0 before:left-4 before:w-px before:bg-border last:pb-0 last:before:hidden [&>:last-child]:mb-0 [&>:not(:first-child)]:ml-12">
       {children}

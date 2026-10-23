@@ -892,38 +892,6 @@ _snippets:
                 type: text
 
   # module:docs end
-  section:
-    template: mdx_paired_component
-    inline: false
-    preview:
-      text:
-        - Numbered section
-      icon: format_list_numbered
-    picker_preview:
-      text: Numbered section
-      icon: format_list_numbered
-    definitions:
-      component_name: Section
-      content_key: content
-      named_args: []
-    _inputs:
-      content:
-        type: markdown
-        comment: Start with a level-2 heading; it becomes the section title and a table of contents entry.
-        options:
-          blockquote: true
-          bold: true
-          bulletedlist: true
-          code_inline: true
-          format: p h2 h3
-          italic: true
-          link: true
-          numberedlist: true
-          redo: true
-          removeformat: true
-          strike: true
-          table: true
-          undo: true
 
   mdx_comment:
     snippet: "{/*[[comment]]*/}"

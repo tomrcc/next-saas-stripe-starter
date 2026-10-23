@@ -1,7 +1,9 @@
 import { loader } from "fumadocs-core/source"
+import { applyMdxPreset } from "fumadocs-mdx/config"
 import { defineCollections } from "fumadocs-mdx/macro"
 import { z } from "zod"
 
+import { remarkSections } from "@/lib/content/remark-sections"
 import { optionalString, pageFields } from "@/lib/content/schema"
 
 // Site pages, one schema each by `_schema`: the home page builder
@@ -26,6 +28,9 @@ const pages = defineCollections({
       updatedAt: z.coerce.date(),
     }),
   ]),
+  mdxOptions: applyMdxPreset({
+    remarkPlugins: (plugins) => [...plugins, remarkSections],
+  }),
 })
 
 export const pagesSource = loader({
