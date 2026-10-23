@@ -337,6 +337,11 @@
     transition: none;
 }
 
+/* Clicks would change the demo's state under the editor's re-renders. */
+.cms-editor-active .panel-demo {
+    pointer-events: none;
+}
+
 .cms-editor-active .animate-slide-up-fade {
     animation: none;
 }

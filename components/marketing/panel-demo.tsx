@@ -136,7 +136,9 @@ export function PanelDemo() {
 
   useEffect(() => {
     const el = rootRef.current
-    if (!el) return
+    // The Visual Editor diffs a fresh render into this DOM on every edit, so
+    // the demo stays still there: a node React later unmounts may be gone.
+    if (!el || (window as { inEditorMode?: boolean }).inEditorMode) return
     const observer = new IntersectionObserver(([entry]) =>
       setInView(entry.isIntersecting)
     )
@@ -337,7 +339,7 @@ export function PanelDemo() {
   return (
     <div
       ref={rootRef}
-      className="flex flex-col items-center gap-6 lg:flex-row lg:items-start lg:justify-center lg:gap-8"
+      className="panel-demo flex flex-col items-center gap-6 lg:flex-row lg:items-start lg:justify-center lg:gap-8"
     >
       <AppPreview isOn={isOn} />
 
