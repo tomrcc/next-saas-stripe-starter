@@ -136,9 +136,7 @@ export function PanelDemo() {
 
   useEffect(() => {
     const el = rootRef.current
-    // The Visual Editor diffs a fresh render into this DOM on every edit, so
-    // the demo stays still there: a node React later unmounts may be gone.
-    if (!el || (window as { inEditorMode?: boolean }).inEditorMode) return
+    if (!el) return
     const observer = new IntersectionObserver(([entry]) =>
       setInView(entry.isIntersecting)
     )
